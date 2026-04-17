@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * 审计服务Feign调用接口
  */
-@FeignClient(name = "audit-service", url = "${feign.client.audit.url:http://localhost:8081}")
+@FeignClient(name = "audit", url = "${feign.client.audit.url:http://localhost:8081}")
 public interface AuditFeignClient {
 
     /**
