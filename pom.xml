@@ -23,6 +23,7 @@
     </developers>
     <modules>
         <module>common</module>
+        <module>audit</module>
     </modules>
     <scm>
         <connection/>
@@ -41,6 +42,12 @@
                 <version>2023.0.1</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.zhitao</groupId>
+                <artifactId>common</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
