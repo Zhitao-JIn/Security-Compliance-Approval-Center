@@ -1,0 +1,46 @@
+# 服务基本配置
+server:
+  port: 8082
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: approval-service
+
+  # 审批服务独立数据库（演示用H2，生产替换为MySQL）
+  datasource:
+    url: jdbc:h2:mem:approval_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  # JPA配置
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# Feign调用配置
+feign:
+  client:
+    audit:
+      url: http://localhost:8081  # 审计服务地址
+    auth:
+      url: http://localhost:8083  # 权限中心地址（后续扩展）
+  # 超时配置
+  httpclient:
+    connect-timeout: 2000
+    read-timeout: 3000
+
+# 日志配置
+logging:
+  level:
+    com.example.approval: DEBUG
