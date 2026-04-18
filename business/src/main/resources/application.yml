@@ -1,0 +1,47 @@
+
+server:
+  port: 8084
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: business-service
+  datasource:
+    url: jdbc:h2:mem:business_db
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+# 远程服务调用配置
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 5000
+        read-timeout: 10000
+        logger-level: basic
+
+# 服务地址配置
+service:
+  auth:
+    url: http://localhost:8081
+  approval:
+    url: http://localhost:8083
+  audit:
+    url: http://localhost:8082
+
+jwt:
+  # 密钥：生产环境请使用 256 位以上的强随机密钥，至少 32 个字符
+  secret: your-256-bit-secret-key-at-least-32-chars-long
+  # 过期时间：7 天（单位：毫秒）
+  expiration: 604800000
