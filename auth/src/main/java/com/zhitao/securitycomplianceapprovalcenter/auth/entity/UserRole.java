@@ -1,4 +1,4 @@
-package com.zhitao.securitycomplianceapprovalcenter.audit.entity;
+package com.zhitao.securitycomplianceapprovalcenter.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

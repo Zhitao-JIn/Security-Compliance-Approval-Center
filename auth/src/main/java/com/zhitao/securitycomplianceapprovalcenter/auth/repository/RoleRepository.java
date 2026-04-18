@@ -1,6 +1,6 @@
-package com.zhitao.securitycomplianceapprovalcenter.audit.repository;
+package com.zhitao.securitycomplianceapprovalcenter.auth.repository;
 
-import com.zhitao.securitycomplianceapprovalcenter.audit.entity.Role;
+import com.zhitao.securitycomplianceapprovalcenter.auth.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoleRepository extends JpaRepository<Role, Long> {

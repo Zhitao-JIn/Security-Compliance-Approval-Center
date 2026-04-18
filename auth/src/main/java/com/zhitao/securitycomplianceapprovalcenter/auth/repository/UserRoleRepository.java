@@ -1,6 +1,6 @@
-package com.zhitao.securitycomplianceapprovalcenter.audit.repository;
+package com.zhitao.securitycomplianceapprovalcenter.auth.repository;
 
-import com.zhitao.securitycomplianceapprovalcenter.audit.entity.UserRole;
+import com.zhitao.securitycomplianceapprovalcenter.auth.entity.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
