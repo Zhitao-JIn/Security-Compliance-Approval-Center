@@ -10,7 +10,6 @@ import java.util.List;
 
 /**
  * 审批申请Repository
- * 类名与原文完全一致：ApprovalRequestRepository
  */
 @Repository
 public interface ApprovalRequestRepository extends JpaRepository<ApprovalRequest, Long> {
@@ -21,7 +20,7 @@ public interface ApprovalRequestRepository extends JpaRepository<ApprovalRequest
     // 根据申请人ID和状态查找申请列表
     List<ApprovalRequest> findByApplicantIdAndStatus(Long applicantId, ApprovalRequest.RequestStatus status);
 
-    // 查找待我审批的申请列表（与原文一致）
+    // 查找待我审批的申请列表
     @Query("SELECT DISTINCT ar FROM ApprovalRequest ar " +
             "JOIN ar.approvalNodes an " +
             "WHERE (an.approverId = :approverId OR an.approverRole = :approverRole) " +

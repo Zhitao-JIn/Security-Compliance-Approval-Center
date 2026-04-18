@@ -8,7 +8,6 @@ import java.util.List;
 
 /**
  * 审批申请节点Repository
- * 类名与原文完全一致：RequestApprovalNodeRepository
  */
 @Repository
 public interface RequestApprovalNodeRepository extends JpaRepository<RequestApprovalNode, Long> {

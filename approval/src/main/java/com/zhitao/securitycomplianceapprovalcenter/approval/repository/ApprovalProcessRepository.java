@@ -8,12 +8,11 @@ import java.util.List;
 
 /**
  * 审批流程Repository
- * 类名与原文完全一致：ApprovalProcessRepository
  */
 @Repository
 public interface ApprovalProcessRepository extends JpaRepository<ApprovalProcess, Long> {
 
-    // 根据操作类型和风险等级查找审批流程（与原文一致）
+    // 根据操作类型和风险等级查找审批流程
     ApprovalProcess findByOperationTypeAndRiskLevel(String operationType, ApprovalProcess.RiskLevel riskLevel);
 
     // 根据操作类型查找审批流程列表
