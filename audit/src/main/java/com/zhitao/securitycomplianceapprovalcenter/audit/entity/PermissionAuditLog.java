@@ -94,4 +94,10 @@ public class PermissionAuditLog {
      */
     @Column(columnDefinition = "TEXT")
     private String errorMessage;
+
+    // 客户端IP
+    private String clientIp;
+
+    // 服务名称
+    private String serviceName;
 }
