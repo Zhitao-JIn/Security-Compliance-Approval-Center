@@ -1,7 +1,7 @@
 package com.zhitao.securitycomplianceapprovalcenter.audit.controller;
 
 import com.zhitao.securitycomplianceapprovalcenter.audit.entity.PermissionAuditLog;
-import com.zhitao.securitycomplianceapprovalcenter.audit.service.AuditLogServiceImpl;
+import com.zhitao.securitycomplianceapprovalcenter.audit.service.AuditLogService;
 import com.zhitao.securitycomplianceapprovalcenter.common.result.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuditLogController {
 
-    private final AuditLogServiceImpl auditLogServiceImpl;
+    private final AuditLogService auditLogService;
 
     /**
      * 记录权限变更审计日志
@@ -54,7 +54,7 @@ public class AuditLogController {
         log.setServiceName("audit-service");
 
         // 保存日志
-        auditLogServiceImpl.recordAuditLog(log);
+        auditLogService.recordAuditLog(log);
 
         return Result.success(null);
     }
