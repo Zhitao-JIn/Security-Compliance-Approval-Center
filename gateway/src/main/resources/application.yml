@@ -7,21 +7,21 @@ spring:
   cloud:
     gateway:
       routes:
+        - # 权限中心服务路由（后续扩展）
+        - id: auth-service
+        - uri: http://localhost:8081
+        - predicates:
+        - Path=/api/auth/**
         # 审计服务路由
         - id: audit-service
-          uri: http://localhost:8081
+          uri: http://localhost:8082
           predicates:
             - Path=/api/audit/**
         # 审批服务路由
         - id: approval-service
-          uri: http://localhost:8082
-          predicates:
-            - Path=/api/approval/**
-        # 权限中心服务路由（后续扩展）
-        - id: auth-service
           uri: http://localhost:8083
           predicates:
-            - Path=/api/auth/**
+            - Path=/api/approval/**
         # 业务后台服务路由（后续扩展）
         - id: business-service
           uri: http://localhost:8084
