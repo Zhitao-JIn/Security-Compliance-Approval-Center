@@ -13,7 +13,6 @@ import java.util.List;
 
 /**
  * 审批流程初始化服务
- * 与原文逻辑完全一致，启动自动初始化审批流程
  */
 @Service
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class ApprovalProcessInitService implements CommandLineRunner {
             return;
         }
 
-        // 初始化所有审批流程（与原文完全一致）
+        // 初始化所有审批流程
         createDeleteDatabaseProcess();
         createTransferFundProcess();
         createModifyPermissionProcess();

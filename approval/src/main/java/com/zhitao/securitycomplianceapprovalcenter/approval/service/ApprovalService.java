@@ -21,7 +21,6 @@ import java.util.UUID;
 
 /**
  * 审批核心服务
- * 类名与原文完全一致：ApprovalService
  * 新增：全流程自动写入审计日志
  */
 @Slf4j
@@ -36,7 +35,7 @@ public class ApprovalService {
     private final AuditFeignClient auditFeignClient;
 
     /**
-     * 创建审批申请（与原文方法名一致）
+     * 创建审批申请
      */
     @Transactional(rollbackFor = Exception.class)
     public ApprovalRequest createRequest(Long applicantId, String applicantName, String applicantDepartment,
@@ -90,7 +89,7 @@ public class ApprovalService {
     }
 
     /**
-     * 提交审批（与原文方法名一致）
+     * 提交审批
      */
     @Transactional(rollbackFor = Exception.class)
     public ApprovalRequest submitRequest(Long requestId) {
@@ -128,7 +127,7 @@ public class ApprovalService {
     }
 
     /**
-     * 审批操作（与原文方法名一致）
+     * 审批操作
      */
     @Transactional(rollbackFor = Exception.class)
     public ApprovalRequest approve(Long requestId, Long approverId, String approverRole,
@@ -203,7 +202,7 @@ public class ApprovalService {
     }
 
     /**
-     * 执行审批通过的操作（与原文方法名一致）
+     * 执行审批通过的操作
      */
     @Transactional(rollbackFor = Exception.class)
     public ApprovalRequest executeRequest(Long requestId) {
@@ -241,7 +240,7 @@ public class ApprovalService {
     }
 
     /**
-     * 撤销审批申请（与原文方法名一致）
+     * 撤销审批申请
      */
     @Transactional(rollbackFor = Exception.class)
     public ApprovalRequest cancelRequest(Long requestId, Long applicantId) {
@@ -285,31 +284,29 @@ public class ApprovalService {
     }
 
     /**
-     * 获取待我审批的申请列表（与原文方法名一致）
+     * 获取待我审批的申请列表
      */
     public List<ApprovalRequest> getPendingApprovals(Long approverId, String approverRole) {
         return requestRepository.findPendingApprovals(approverId, approverRole);
     }
 
     /**
-     * 获取我的申请列表（与原文方法名一致）
+     * 获取我的申请列表
      */
     public List<ApprovalRequest> getMyRequests(Long applicantId) {
         return requestRepository.findByApplicantId(applicantId);
     }
 
     /**
-     * 获取申请详情（与原文方法名一致）
+     * 获取申请详情
      */
     public ApprovalRequest getRequestDetail(Long requestId) {
         return requestRepository.findById(requestId)
                 .orElseThrow(() -> new RuntimeException("审批申请不存在"));
     }
 
-    // ------------------------------ 私有辅助方法（与原文一致，新增审计日志方法） ------------------------------
-
     /**
-     * 创建审批节点（与原文逻辑一致）
+     * 创建审批节点
      */
     private void createApprovalNodes(ApprovalRequest request, ApprovalProcess process) {
         for (ApprovalNode configNode : process.getApprovalNodes()) {
@@ -326,7 +323,7 @@ public class ApprovalService {
     }
 
     /**
-     * 获取当前审批节点（与原文逻辑一致）
+     * 获取当前审批节点
      */
     private RequestApprovalNode getCurrentApprovalNode(ApprovalRequest request) {
         return request.getApprovalNodes().stream()
@@ -336,7 +333,7 @@ public class ApprovalService {
     }
 
     /**
-     * 校验审批人权限（与原文逻辑一致）
+     * 校验审批人权限
      */
     private boolean canApprove(RequestApprovalNode node, Long approverId, String approverRole) {
         if (node.getApproverId() != null && node.getApproverId().equals(approverId)) {
@@ -349,7 +346,7 @@ public class ApprovalService {
     }
 
     /**
-     * 生成申请编号（与原文逻辑一致）
+     * 生成申请编号
      */
     private String generateRequestNo() {
         return "APR" + System.currentTimeMillis() + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
