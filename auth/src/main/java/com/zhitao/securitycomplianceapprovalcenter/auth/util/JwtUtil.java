@@ -37,8 +37,7 @@ public class JwtUtil {
      * @param user 用户实体
      * @return JWT Token 字符串
      */
-    public String generateToken(User user) {
-        Map<String, Object> claims = new HashMap<>();
+    public String generateToken(Map<String, Object> claims,User user) {
         // 自定义载荷：存入 userId 和 username
         claims.put("userId", user.getId());
         claims.put("username", user.getUsername());
