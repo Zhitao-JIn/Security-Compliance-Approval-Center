@@ -12,7 +12,6 @@ import java.util.List;
 
 /**
  * 审批控制器
- * 接口路径与原文完全一致：/api/approval
  */
 @RestController
 @RequestMapping("/api/approval")
@@ -22,7 +21,7 @@ public class ApprovalController {
     private final ApprovalService approvalService;
 
     /**
-     * 创建审批申请（与原文接口一致）
+     * 创建审批申请
      */
     @PostMapping("/request")
     public Result<ApprovalRequest> createRequest(@RequestBody ApprovalRequestDTO request) {
@@ -39,7 +38,7 @@ public class ApprovalController {
     }
 
     /**
-     * 提交审批（与原文接口一致）
+     * 提交审批
      */
     @PostMapping("/request/{id}/submit")
     public Result<ApprovalRequest> submitRequest(@PathVariable Long id) {
@@ -48,7 +47,7 @@ public class ApprovalController {
     }
 
     /**
-     * 审批操作（与原文接口一致）
+     * 审批操作
      */
     @PostMapping("/request/{id}/approve")
     public Result<ApprovalRequest> approve(@PathVariable Long id, @RequestBody ApprovalDTO approval) {
@@ -63,7 +62,7 @@ public class ApprovalController {
     }
 
     /**
-     * 执行审批通过的操作（与原文接口一致）
+     * 执行审批通过的操作
      */
     @PostMapping("/request/{id}/execute")
     public Result<ApprovalRequest> executeRequest(@PathVariable Long id) {
@@ -72,7 +71,7 @@ public class ApprovalController {
     }
 
     /**
-     * 撤销审批申请（与原文接口一致）
+     * 撤销审批申请
      */
     @PostMapping("/request/{id}/cancel")
     public Result<ApprovalRequest> cancelRequest(@PathVariable Long id, @RequestParam Long applicantId) {
@@ -81,7 +80,7 @@ public class ApprovalController {
     }
 
     /**
-     * 获取待我审批的申请列表（与原文接口一致）
+     * 获取待我审批的申请列表
      */
     @GetMapping("/pending")
     public Result<List<ApprovalRequest>> getPendingApprovals(
@@ -92,7 +91,7 @@ public class ApprovalController {
     }
 
     /**
-     * 获取我的申请列表（与原文接口一致）
+     * 获取我的申请列表
      */
     @GetMapping("/my-requests")
     public Result<List<ApprovalRequest>> getMyRequests(@RequestParam Long applicantId) {
@@ -101,7 +100,7 @@ public class ApprovalController {
     }
 
     /**
-     * 获取申请详情（与原文接口一致）
+     * 获取申请详情
      */
     @GetMapping("/request/{id}")
     public Result<ApprovalRequest> getRequestDetail(@PathVariable Long id) {
@@ -109,7 +108,7 @@ public class ApprovalController {
         return Result.success(request);
     }
 
-    // ------------------------------ DTO类（与原文完全一致） ------------------------------
+    // ------------------------------ DTO类 ------------------------------
     @Data
     public static class ApprovalRequestDTO {
         private Long applicantId;
