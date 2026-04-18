@@ -10,7 +10,7 @@ spring:
 
   # 审批服务独立数据库（演示用H2，生产替换为MySQL）
   datasource:
-    url: jdbc:h2:mem:approval_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:file:~/approval_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
     username: sa
     password:
