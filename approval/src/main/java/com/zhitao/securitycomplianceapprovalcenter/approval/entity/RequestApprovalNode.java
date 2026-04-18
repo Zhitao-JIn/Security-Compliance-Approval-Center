@@ -2,11 +2,12 @@ package com.zhitao.securitycomplianceapprovalcenter.approval.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
+
 import java.time.LocalDateTime;
 
 /**
  * 审批申请节点实体
- * 类名与原文完全一致：RequestApprovalNode
  */
 @Data
 @Entity
@@ -18,6 +19,7 @@ public class RequestApprovalNode {
     private Long id;
 
     // 所属申请
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "request_id")
     private ApprovalRequest approvalRequest;
@@ -47,7 +49,6 @@ public class RequestApprovalNode {
     // 创建时间
     private LocalDateTime createTime;
 
-    // 节点状态枚举（与原文一致）
     public enum NodeStatus {
         PENDING, APPROVED, REJECTED
     }

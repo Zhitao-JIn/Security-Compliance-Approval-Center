@@ -2,12 +2,13 @@ package com.zhitao.securitycomplianceapprovalcenter.approval.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * 审批申请实体
- * 类名与原文完全一致：ApprovalRequest
  */
 @Data
 @Entity
@@ -22,6 +23,7 @@ public class ApprovalRequest {
     private String requestNo;
 
     // 关联的审批流程
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "process_id")
     private ApprovalProcess approvalProcess;
@@ -53,6 +55,7 @@ public class ApprovalRequest {
     private Integer approvalLevel;
 
     // 审批节点列表
+    @ToString.Exclude
     @OneToMany(mappedBy = "approvalRequest", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<RequestApprovalNode> approvalNodes;
 
@@ -69,7 +72,7 @@ public class ApprovalRequest {
     // 更新时间
     private LocalDateTime updateTime;
 
-    // 申请状态枚举（与原文一致）
+    // 申请状态枚举
     public enum RequestStatus {
         PENDING, SUBMITTED, APPROVING, APPROVED, REJECTED, EXECUTED, CANCELLED
     }

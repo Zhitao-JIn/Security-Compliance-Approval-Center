@@ -2,6 +2,7 @@ package com.zhitao.securitycomplianceapprovalcenter.approval.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +16,7 @@ public class ApprovalNode {
     private Long id;
 
     // 所属流程
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "process_id")
     private ApprovalProcess approvalProcess;
@@ -38,7 +40,7 @@ public class ApprovalNode {
     // 创建时间
     private LocalDateTime createTime;
 
-    // 审批状态枚举（与原文一致）
+    // 审批状态枚举
     public enum ApprovalStatus {
         PENDING, APPROVED, REJECTED
     }
