@@ -1,8 +1,7 @@
-package com.zhitao.securitycomplianceapprovalcenter.auth.util;
+package com.zhitao.securitycomplianceapprovalcenter.common.util;
 
-import com.zhitao.securitycomplianceapprovalcenter.auth.entity.User;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
+
+import io.jsonwebtoken.Claims;import io.jsonwebtoken.Jwts;import io.jsonwebtoken.SignatureAlgorithm;import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -32,17 +31,6 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    /**
-     * 生成 JWT Token
-     * @param user 用户实体
-     * @return JWT Token 字符串
-     */
-    public String generateToken(Map<String, Object> claims,User user) {
-        // 自定义载荷：存入 userId 和 username
-        claims.put("userId", user.getId());
-        claims.put("username", user.getUsername());
-        return createToken(claims, user.getUsername());
-    }
 
     /**
      * 构建 Token
@@ -50,7 +38,7 @@ public class JwtUtil {
      * @param subject 主题（通常是用户名）
      * @return JWT Token
      */
-    private String createToken(Map<String, Object> claims, String subject) {
+    public String createToken(Map<String, Object> claims, String subject) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
 
@@ -111,11 +99,11 @@ public class JwtUtil {
     /**
      * 验证 Token 是否有效
      * @param token JWT Token
-     * @param user 用户实体（用于比对用户名）
+     * @param userName 用户名
      * @return 是否有效
      */
-    public Boolean validateToken(String token, User user) {
+    public Boolean validateToken(String token, String userName) {
         String username = getUsernameFromToken(token);
-        return (username.equals(user.getUsername()) && !isTokenExpired(token));
+        return (username.equals(userName) && !isTokenExpired(token));
     }
 }
