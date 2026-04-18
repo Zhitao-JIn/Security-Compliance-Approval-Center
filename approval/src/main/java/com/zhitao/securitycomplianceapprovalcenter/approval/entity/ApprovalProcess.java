@@ -1,5 +1,6 @@
 package com.zhitao.securitycomplianceapprovalcenter.approval.entity;
 
+import com.zhitao.securitycomplianceapprovalcenter.common.enums.RiskLevel;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -43,10 +44,5 @@ public class ApprovalProcess {
 
     // 是否启用
     private Boolean enabled;
-
-    // 风险等级枚举
-    public enum RiskLevel {
-        LOW, MEDIUM, HIGH, CRITICAL
-    }
 
 }

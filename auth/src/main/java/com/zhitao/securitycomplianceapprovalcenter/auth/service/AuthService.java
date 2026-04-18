@@ -4,16 +4,14 @@ package com.zhitao.securitycomplianceapprovalcenter.auth.service;
 import com.zhitao.securitycomplianceapprovalcenter.auth.entity.Permission;
 import com.zhitao.securitycomplianceapprovalcenter.auth.entity.Role;
 import com.zhitao.securitycomplianceapprovalcenter.auth.entity.User;
-import com.zhitao.securitycomplianceapprovalcenter.auth.util.JwtUtil;
+import com.zhitao.securitycomplianceapprovalcenter.common.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +43,7 @@ public class AuthService {
         claims.put("username", user.getUsername());
         claims.put("permissions", permissionCodes); // 权限列表注入Token
 
-        return jwtUtil.generateToken(claims,user);
+        return jwtUtil.createToken(claims,username);
     }
 
 

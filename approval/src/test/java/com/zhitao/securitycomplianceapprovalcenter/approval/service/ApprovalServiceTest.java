@@ -5,6 +5,7 @@ import com.zhitao.securitycomplianceapprovalcenter.approval.entity.ApprovalReque
 import com.zhitao.securitycomplianceapprovalcenter.approval.entity.RequestApprovalNode;
 import com.zhitao.securitycomplianceapprovalcenter.approval.repository.ApprovalProcessRepository;
 import com.zhitao.securitycomplianceapprovalcenter.approval.repository.ApprovalRequestRepository;
+import com.zhitao.securitycomplianceapprovalcenter.common.enums.RiskLevel;
 import com.zhitao.securitycomplianceapprovalcenter.common.feign.AuditFeignClient;
 import com.zhitao.securitycomplianceapprovalcenter.common.result.Result;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,7 +65,7 @@ public class ApprovalServiceTest {
                 "MODIFY_PERMISSION",
                 "给用户李四分配系统管理员角色",
                 "新员工入职",
-                ApprovalProcess.RiskLevel.HIGH
+                RiskLevel.HIGH
         );
         request = requestRepository.findById(request.getId()).orElseThrow(()->new RuntimeException("request 不存在"));
 
@@ -134,7 +135,7 @@ public class ApprovalServiceTest {
                 "MODIFY_PERMISSION",
                 "越权修改权限",
                 "测试拒绝",
-                ApprovalProcess.RiskLevel.HIGH
+                RiskLevel.HIGH
         );
         request = approvalService.submitRequest(request.getId());
 
@@ -170,7 +171,7 @@ public class ApprovalServiceTest {
                 "MODIFY_PERMISSION",
                 "测试",
                 "测试",
-                ApprovalProcess.RiskLevel.HIGH
+                RiskLevel.HIGH
         );
         request = approvalService.submitRequest(request.getId());
 
@@ -196,7 +197,7 @@ public class ApprovalServiceTest {
                 "MODIFY_PERMISSION",
                 "测试",
                 "测试",
-                ApprovalProcess.RiskLevel.HIGH
+                RiskLevel.HIGH
         );
         request = approvalService.submitRequest(request.getId());
         request = approvalService.approve(request.getId(), 2L, "MANAGER", true, "同意");
@@ -227,7 +228,7 @@ public class ApprovalServiceTest {
                 "MODIFY_PERMISSION",
                 "测试",
                 "测试",
-                ApprovalProcess.RiskLevel.HIGH
+                RiskLevel.HIGH
         );
         request = approvalService.submitRequest(request.getId());
 
@@ -253,7 +254,7 @@ public class ApprovalServiceTest {
                 "MODIFY_PERMISSION",
                 "测试",
                 "测试",
-                ApprovalProcess.RiskLevel.HIGH
+                RiskLevel.HIGH
         );
 
         // 2. 用非申请人ID撤销，应该抛出异常
@@ -276,10 +277,10 @@ public class ApprovalServiceTest {
         List<ApprovalRequest> pendingList_origin = approvalService.getPendingApprovals(2L, "MANAGER");
 
         ApprovalRequest request1 = approvalService.createRequest(
-                1L, "张三", "技术部", "MODIFY_PERMISSION", "测试1", "测试", ApprovalProcess.RiskLevel.HIGH
+                1L, "张三", "技术部", "MODIFY_PERMISSION", "测试1", "测试", RiskLevel.HIGH
         );
         ApprovalRequest request2 = approvalService.createRequest(
-                2L, "李四", "技术部", "MODIFY_PERMISSION", "测试2", "测试", ApprovalProcess.RiskLevel.HIGH
+                2L, "李四", "技术部", "MODIFY_PERMISSION", "测试2", "测试", RiskLevel.HIGH
         );
         approvalService.submitRequest(request1.getId());
         approvalService.submitRequest(request2.getId());
@@ -301,10 +302,10 @@ public class ApprovalServiceTest {
     public void testGetMyRequests_我的申请列表查询() {
         List<ApprovalRequest> myRequests_origin = approvalService.getMyRequests(1L);
         // 1. 张三创建2个申请
-        approvalService.createRequest(1L, "张三", "技术部", "MODIFY_PERMISSION", "测试1", "测试", ApprovalProcess.RiskLevel.HIGH);
-        approvalService.createRequest(1L, "张三", "技术部", "MODIFY_CONFIG", "测试2", "测试", ApprovalProcess.RiskLevel.HIGH);
+        approvalService.createRequest(1L, "张三", "技术部", "MODIFY_PERMISSION", "测试1", "测试", RiskLevel.HIGH);
+        approvalService.createRequest(1L, "张三", "技术部", "MODIFY_CONFIG", "测试2", "测试", RiskLevel.HIGH);
         // 李四创建1个申请
-        approvalService.createRequest(2L, "李四", "技术部", "EXPORT_DATA", "测试3", "测试", ApprovalProcess.RiskLevel.MEDIUM);
+        approvalService.createRequest(2L, "李四", "技术部", "EXPORT_DATA", "测试3", "测试", RiskLevel.MEDIUM);
 
         // 2. 查询张三的申请列表
         List<ApprovalRequest> myRequests = approvalService.getMyRequests(1L);

@@ -3,6 +3,7 @@ package com.zhitao.securitycomplianceapprovalcenter.approval.service;
 import com.zhitao.securitycomplianceapprovalcenter.approval.entity.ApprovalNode;
 import com.zhitao.securitycomplianceapprovalcenter.approval.entity.ApprovalProcess;
 import com.zhitao.securitycomplianceapprovalcenter.approval.repository.ApprovalProcessRepository;
+import com.zhitao.securitycomplianceapprovalcenter.common.enums.RiskLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class ApprovalProcessInitService implements CommandLineRunner {
         ApprovalProcess process = new ApprovalProcess();
         process.setProcessName("数据库删除审批流程");
         process.setOperationType("DELETE_DATABASE");
-        process.setRiskLevel(ApprovalProcess.RiskLevel.CRITICAL);
+        process.setRiskLevel(RiskLevel.CRITICAL);
         process.setApprovalLevel(3);
         process.setEnabled(true);
         process.setCreateTime(LocalDateTime.now());
@@ -90,7 +91,7 @@ public class ApprovalProcessInitService implements CommandLineRunner {
         ApprovalProcess process = new ApprovalProcess();
         process.setProcessName("资金转账审批流程");
         process.setOperationType("TRANSFER_FUND");
-        process.setRiskLevel(ApprovalProcess.RiskLevel.CRITICAL);
+        process.setRiskLevel(RiskLevel.CRITICAL);
         process.setApprovalLevel(3);
         process.setEnabled(true);
         process.setCreateTime(LocalDateTime.now());
@@ -135,7 +136,7 @@ public class ApprovalProcessInitService implements CommandLineRunner {
         ApprovalProcess process = new ApprovalProcess();
         process.setProcessName("权限变更审批流程");
         process.setOperationType("MODIFY_PERMISSION");
-        process.setRiskLevel(ApprovalProcess.RiskLevel.HIGH);
+        process.setRiskLevel(RiskLevel.HIGH);
         process.setApprovalLevel(2);
         process.setEnabled(true);
         process.setCreateTime(LocalDateTime.now());
@@ -171,7 +172,7 @@ public class ApprovalProcessInitService implements CommandLineRunner {
         ApprovalProcess process = new ApprovalProcess();
         process.setProcessName("配置修改审批流程");
         process.setOperationType("MODIFY_CONFIG");
-        process.setRiskLevel(ApprovalProcess.RiskLevel.HIGH);
+        process.setRiskLevel(RiskLevel.HIGH);
         process.setApprovalLevel(2);
         process.setEnabled(true);
         process.setCreateTime(LocalDateTime.now());
@@ -207,7 +208,7 @@ public class ApprovalProcessInitService implements CommandLineRunner {
         ApprovalProcess process = new ApprovalProcess();
         process.setProcessName("数据导出审批流程");
         process.setOperationType("EXPORT_DATA");
-        process.setRiskLevel(ApprovalProcess.RiskLevel.MEDIUM);
+        process.setRiskLevel(RiskLevel.MEDIUM);
         process.setApprovalLevel(1);
         process.setEnabled(true);
         process.setCreateTime(LocalDateTime.now());

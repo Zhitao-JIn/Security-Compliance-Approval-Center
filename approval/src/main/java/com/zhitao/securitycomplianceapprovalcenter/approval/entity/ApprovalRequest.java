@@ -1,5 +1,6 @@
 package com.zhitao.securitycomplianceapprovalcenter.approval.entity;
 
+import com.zhitao.securitycomplianceapprovalcenter.common.enums.RiskLevel;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
@@ -49,7 +50,7 @@ public class ApprovalRequest {
 
     // 风险等级
     @Enumerated(EnumType.STRING)
-    private ApprovalProcess.RiskLevel riskLevel;
+    private RiskLevel riskLevel;
 
     // 审批级别
     private Integer approvalLevel;

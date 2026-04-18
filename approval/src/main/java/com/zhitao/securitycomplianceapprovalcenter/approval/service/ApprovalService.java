@@ -8,6 +8,7 @@ import com.zhitao.securitycomplianceapprovalcenter.approval.repository.ApprovalP
 import com.zhitao.securitycomplianceapprovalcenter.approval.repository.ApprovalRequestRepository;
 import com.zhitao.securitycomplianceapprovalcenter.approval.repository.RequestApprovalNodeRepository;
 import com.zhitao.securitycomplianceapprovalcenter.common.enums.AuditLevelEnum;
+import com.zhitao.securitycomplianceapprovalcenter.common.enums.RiskLevel;
 import com.zhitao.securitycomplianceapprovalcenter.common.feign.AuditFeignClient;
 import com.zhitao.securitycomplianceapprovalcenter.common.result.Result;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class ApprovalService {
     @Transactional(rollbackFor = Exception.class)
     public ApprovalRequest createRequest(Long applicantId, String applicantName, String applicantDepartment,
                                          String operationType, String operationContent, String operationReason,
-                                         ApprovalProcess.RiskLevel riskLevel) {
+                                         RiskLevel riskLevel) {
         // 1. 根据操作类型和风险等级查找审批流程
         ApprovalProcess process = processRepository.findByOperationTypeAndRiskLevel(operationType, riskLevel);
         if (process == null || !process.getEnabled()) {
@@ -355,7 +356,7 @@ public class ApprovalService {
     /**
      * 风险等级映射审计级别
      */
-    private String getAuditLevelByRisk(ApprovalProcess.RiskLevel riskLevel) {
+    private String getAuditLevelByRisk(RiskLevel riskLevel) {
         return switch (riskLevel) {
             case CRITICAL -> AuditLevelEnum.CRITICAL.getCode();
             case HIGH -> AuditLevelEnum.HIGH.getCode();
