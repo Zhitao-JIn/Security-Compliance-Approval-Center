@@ -24,6 +24,9 @@
     <modules>
         <module>common</module>
         <module>audit</module>
+        <module>approval</module>
+        <module>gateway</module>
+        <module>auth</module>
     </modules>
     <scm>
         <connection/>
