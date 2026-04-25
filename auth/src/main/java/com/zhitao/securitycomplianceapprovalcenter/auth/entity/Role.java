@@ -17,6 +17,11 @@ public class Role {
     private Long id;
 
     /**
+     * 角色编码（业务标识，如：ADMIN, USER, SECURITY_ADMIN）
+     */
+    private String code;
+
+    /**
      * 角色名称
      */
     private String name;
