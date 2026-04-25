@@ -1,0 +1,38 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:business_test_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+server:
+  port: 8084
+
+# Feign 调用配置 - 指向本地运行的其他服务
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 10000
+        read-timeout: 10000
+        logger-level: basic
+
+service:
+  auth:
+    url: http://localhost:8081
+  approval:
+    url: http://localhost:8083
+  audit:
+    url: http://localhost:8082
+
+jwt:
+  secret: test-secret-key-for-integration-testing-must-be-long-enough
+  expiration: 3600000
