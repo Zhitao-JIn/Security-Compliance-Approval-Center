@@ -29,11 +29,25 @@ public class ApprovalProcessInitService implements CommandLineRunner {
         }
 
         // 初始化所有审批流程
+        // 原有流程
         createDeleteDatabaseProcess();
         createTransferFundProcess();
         createModifyPermissionProcess();
         createModifyConfigProcess();
         createExportDataProcess();
+
+        // 新增：用户管理审批流程
+        createUserCreateProcess();
+        createUserDisableProcess();
+        createUserResetPasswordProcess();
+
+        // 新增：角色管理审批流程
+        createRoleCreateProcess();
+        createRoleDeleteProcess();
+        createRoleBindPermissionProcess();
+
+        // 新增：权限移除审批流程
+        createRemovePermissionProcess();
     }
 
     /**
@@ -223,6 +237,249 @@ public class ApprovalProcessInitService implements CommandLineRunner {
         node1.setStatus(ApprovalNode.ApprovalStatus.PENDING);
         node1.setCreateTime(LocalDateTime.now());
         nodes.add(node1);
+
+        process.setApprovalNodes(nodes);
+        processRepository.save(process);
+    }
+
+    /**
+     * 创建用户创建审批流程（二级审批）
+     */
+    private void createUserCreateProcess() {
+        ApprovalProcess process = new ApprovalProcess();
+        process.setProcessName("用户创建审批流程");
+        process.setOperationType("CREATE_USER");
+        process.setRiskLevel(RiskLevel.MEDIUM);
+        process.setApprovalLevel(2);
+        process.setEnabled(true);
+        process.setCreateTime(LocalDateTime.now());
+        process.setUpdateTime(LocalDateTime.now());
+
+        List<ApprovalNode> nodes = new ArrayList<>();
+        ApprovalNode node1 = new ApprovalNode();
+        node1.setApprovalProcess(process);
+        node1.setNodeName("直接上级审批");
+        node1.setNodeOrder(0);
+        node1.setApproverRole("MANAGER");
+        node1.setStatus(ApprovalNode.ApprovalStatus.PENDING);
+        node1.setCreateTime(LocalDateTime.now());
+        nodes.add(node1);
+
+        ApprovalNode node2 = new ApprovalNode();
+        node2.setApprovalProcess(process);
+        node2.setNodeName("HR 备案审批");
+        node2.setNodeOrder(1);
+        node2.setApproverRole("HR_ADMIN");
+        node2.setStatus(ApprovalNode.ApprovalStatus.PENDING);
+        node2.setCreateTime(LocalDateTime.now());
+        nodes.add(node2);
+
+        process.setApprovalNodes(nodes);
+        processRepository.save(process);
+    }
+
+    /**
+     * 创建用户禁用审批流程（二级审批）
+     */
+    private void createUserDisableProcess() {
+        ApprovalProcess process = new ApprovalProcess();
+        process.setProcessName("用户禁用审批流程");
+        process.setOperationType("DISABLE_USER");
+        process.setRiskLevel(RiskLevel.HIGH);
+        process.setApprovalLevel(2);
+        process.setEnabled(true);
+        process.setCreateTime(LocalDateTime.now());
+        process.setUpdateTime(LocalDateTime.now());
+
+        List<ApprovalNode> nodes = new ArrayList<>();
+        ApprovalNode node1 = new ApprovalNode();
+        node1.setApprovalProcess(process);
+        node1.setNodeName("直接上级审批");
+        node1.setNodeOrder(0);
+        node1.setApproverRole("MANAGER");
+        node1.setStatus(ApprovalNode.ApprovalStatus.PENDING);
+        node1.setCreateTime(LocalDateTime.now());
+        nodes.add(node1);
+
+        ApprovalNode node2 = new ApprovalNode();
+        node2.setApprovalProcess(process);
+        node2.setNodeName("安全管理员审批");
+        node2.setNodeOrder(1);
+        node2.setApproverRole("SECURITY_ADMIN");
+        node2.setStatus(ApprovalNode.ApprovalStatus.PENDING);
+        node2.setCreateTime(LocalDateTime.now());
+        nodes.add(node2);
+
+        process.setApprovalNodes(nodes);
+        processRepository.save(process);
+    }
+
+    /**
+     * 创建用户重置密码审批流程（一级审批）
+     */
+    private void createUserResetPasswordProcess() {
+        ApprovalProcess process = new ApprovalProcess();
+        process.setProcessName("用户重置密码审批流程");
+        process.setOperationType("RESET_USER_PASSWORD");
+        process.setRiskLevel(RiskLevel.MEDIUM);
+        process.setApprovalLevel(1);
+        process.setEnabled(true);
+        process.setCreateTime(LocalDateTime.now());
+        process.setUpdateTime(LocalDateTime.now());
+
+        List<ApprovalNode> nodes = new ArrayList<>();
+        ApprovalNode node1 = new ApprovalNode();
+        node1.setApprovalProcess(process);
+        node1.setNodeName("直接上级审批");
+        node1.setNodeOrder(0);
+        node1.setApproverRole("MANAGER");
+        node1.setStatus(ApprovalNode.ApprovalStatus.PENDING);
+        node1.setCreateTime(LocalDateTime.now());
+        nodes.add(node1);
+
+        process.setApprovalNodes(nodes);
+        processRepository.save(process);
+    }
+
+    /**
+     * 创建角色创建审批流程（二级审批）
+     */
+    private void createRoleCreateProcess() {
+        ApprovalProcess process = new ApprovalProcess();
+        process.setProcessName("角色创建审批流程");
+        process.setOperationType("CREATE_ROLE");
+        process.setRiskLevel(RiskLevel.HIGH);
+        process.setApprovalLevel(2);
+        process.setEnabled(true);
+        process.setCreateTime(LocalDateTime.now());
+        process.setUpdateTime(LocalDateTime.now());
+
+        List<ApprovalNode> nodes = new ArrayList<>();
+        ApprovalNode node1 = new ApprovalNode();
+        node1.setApprovalProcess(process);
+        node1.setNodeName("部门经理审批");
+        node1.setNodeOrder(0);
+        node1.setApproverRole("DIRECTOR");
+        node1.setStatus(ApprovalNode.ApprovalStatus.PENDING);
+        node1.setCreateTime(LocalDateTime.now());
+        nodes.add(node1);
+
+        ApprovalNode node2 = new ApprovalNode();
+        node2.setApprovalProcess(process);
+        node2.setNodeName("安全管理员审批");
+        node2.setNodeOrder(1);
+        node2.setApproverRole("SECURITY_ADMIN");
+        node2.setStatus(ApprovalNode.ApprovalStatus.PENDING);
+        node2.setCreateTime(LocalDateTime.now());
+        nodes.add(node2);
+
+        process.setApprovalNodes(nodes);
+        processRepository.save(process);
+    }
+
+    /**
+     * 创建角色删除审批流程（二级审批）
+     */
+    private void createRoleDeleteProcess() {
+        ApprovalProcess process = new ApprovalProcess();
+        process.setProcessName("角色删除审批流程");
+        process.setOperationType("DELETE_ROLE");
+        process.setRiskLevel(RiskLevel.HIGH);
+        process.setApprovalLevel(2);
+        process.setEnabled(true);
+        process.setCreateTime(LocalDateTime.now());
+        process.setUpdateTime(LocalDateTime.now());
+
+        List<ApprovalNode> nodes = new ArrayList<>();
+        ApprovalNode node1 = new ApprovalNode();
+        node1.setApprovalProcess(process);
+        node1.setNodeName("部门经理审批");
+        node1.setNodeOrder(0);
+        node1.setApproverRole("DIRECTOR");
+        node1.setStatus(ApprovalNode.ApprovalStatus.PENDING);
+        node1.setCreateTime(LocalDateTime.now());
+        nodes.add(node1);
+
+        ApprovalNode node2 = new ApprovalNode();
+        node2.setApprovalProcess(process);
+        node2.setNodeName("安全管理员审批");
+        node2.setNodeOrder(1);
+        node2.setApproverRole("SECURITY_ADMIN");
+        node2.setStatus(ApprovalNode.ApprovalStatus.PENDING);
+        node2.setCreateTime(LocalDateTime.now());
+        nodes.add(node2);
+
+        process.setApprovalNodes(nodes);
+        processRepository.save(process);
+    }
+
+    /**
+     * 创建角色绑定权限审批流程（二级审批）
+     */
+    private void createRoleBindPermissionProcess() {
+        ApprovalProcess process = new ApprovalProcess();
+        process.setProcessName("角色绑定权限审批流程");
+        process.setOperationType("BIND_ROLE_PERMISSION");
+        process.setRiskLevel(RiskLevel.HIGH);
+        process.setApprovalLevel(2);
+        process.setEnabled(true);
+        process.setCreateTime(LocalDateTime.now());
+        process.setUpdateTime(LocalDateTime.now());
+
+        List<ApprovalNode> nodes = new ArrayList<>();
+        ApprovalNode node1 = new ApprovalNode();
+        node1.setApprovalProcess(process);
+        node1.setNodeName("直接上级审批");
+        node1.setNodeOrder(0);
+        node1.setApproverRole("MANAGER");
+        node1.setStatus(ApprovalNode.ApprovalStatus.PENDING);
+        node1.setCreateTime(LocalDateTime.now());
+        nodes.add(node1);
+
+        ApprovalNode node2 = new ApprovalNode();
+        node2.setApprovalProcess(process);
+        node2.setNodeName("安全管理员审批");
+        node2.setNodeOrder(1);
+        node2.setApproverRole("SECURITY_ADMIN");
+        node2.setStatus(ApprovalNode.ApprovalStatus.PENDING);
+        node2.setCreateTime(LocalDateTime.now());
+        nodes.add(node2);
+
+        process.setApprovalNodes(nodes);
+        processRepository.save(process);
+    }
+
+    /**
+     * 创建权限移除审批流程（二级审批）
+     */
+    private void createRemovePermissionProcess() {
+        ApprovalProcess process = new ApprovalProcess();
+        process.setProcessName("权限移除审批流程");
+        process.setOperationType("REMOVE_PERMISSION");
+        process.setRiskLevel(RiskLevel.HIGH);
+        process.setApprovalLevel(2);
+        process.setEnabled(true);
+        process.setCreateTime(LocalDateTime.now());
+        process.setUpdateTime(LocalDateTime.now());
+
+        List<ApprovalNode> nodes = new ArrayList<>();
+        ApprovalNode node1 = new ApprovalNode();
+        node1.setApprovalProcess(process);
+        node1.setNodeName("直接上级审批");
+        node1.setNodeOrder(0);
+        node1.setApproverRole("MANAGER");
+        node1.setStatus(ApprovalNode.ApprovalStatus.PENDING);
+        node1.setCreateTime(LocalDateTime.now());
+        nodes.add(node1);
+
+        ApprovalNode node2 = new ApprovalNode();
+        node2.setApprovalProcess(process);
+        node2.setNodeName("安全管理员审批");
+        node2.setNodeOrder(1);
+        node2.setApproverRole("SECURITY_ADMIN");
+        node2.setStatus(ApprovalNode.ApprovalStatus.PENDING);
+        node2.setCreateTime(LocalDateTime.now());
+        nodes.add(node2);
 
         process.setApprovalNodes(nodes);
         processRepository.save(process);
