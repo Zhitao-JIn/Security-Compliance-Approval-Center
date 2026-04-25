@@ -3,12 +3,16 @@ package com.zhitao.securitycomplianceapprovalcenter.approval.controller;
 import com.zhitao.securitycomplianceapprovalcenter.approval.entity.ApprovalProcess;
 import com.zhitao.securitycomplianceapprovalcenter.approval.entity.ApprovalRequest;
 import com.zhitao.securitycomplianceapprovalcenter.approval.service.ApprovalService;
+import com.zhitao.securitycomplianceapprovalcenter.common.enums.RiskLevel;
 import com.zhitao.securitycomplianceapprovalcenter.common.result.Result;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 审批控制器
@@ -21,82 +25,63 @@ public class ApprovalController {
     private final ApprovalService approvalService;
 
     /**
-     * 创建审批申请
+     * 创建审批申请（Feign 接口 - 接收 Map 返回 Result<Map>）
      */
     @PostMapping("/request")
-    public Result<ApprovalRequest> createRequest(@RequestBody ApprovalRequestDTO request) {
+    public Result<Map<String, Object>> createApprovalRequest(@RequestBody Map<String, Object> requestDTO) {
         ApprovalRequest approvalRequest = approvalService.createRequest(
-                request.getApplicantId(),
-                request.getApplicantName(),
-                request.getApplicantDepartment(),
-                request.getOperationType(),
-                request.getOperationContent(),
-                request.getOperationReason(),
-                request.getRiskLevel()
+                Long.valueOf(requestDTO.get("applicantId").toString()),
+                requestDTO.get("applicantName").toString(),
+                requestDTO.get("applicantDepartment").toString(),
+                requestDTO.get("operationType").toString(),
+                requestDTO.get("operationContent").toString(),
+                requestDTO.get("operationReason").toString(),
+                RiskLevel.valueOf(requestDTO.get("riskLevel").toString())
         );
-        return Result.success("审批申请创建成功", approvalRequest);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("requestNo", approvalRequest.getRequestNo());
+        response.put("status", approvalRequest.getStatus().name());
+        return Result.success("审批申请创建成功", response);
     }
 
     /**
-     * 提交审批
+     * 获取我的申请列表（Feign 接口 - 返回 Result<List<Map>>）
      */
-    @PostMapping("/request/{id}/submit")
-    public Result<ApprovalRequest> submitRequest(@PathVariable Long id) {
-        ApprovalRequest request = approvalService.submitRequest(id);
-        return Result.success("审批提交成功", request);
+    @GetMapping("/my-requests")
+    public Result<List<Map<String, Object>>> getMyRequests(@RequestParam Long applicantId) {
+        List<ApprovalRequest> list = approvalService.getMyRequests(applicantId);
+        List<Map<String, Object>> response = list.stream().map(request -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("requestNo", request.getRequestNo());
+            map.put("status", request.getStatus().name());
+            map.put("operationType", request.getOperationType());
+            map.put("operationContent", request.getOperationContent());
+            map.put("createTime", request.getCreateTime());
+            return map;
+        }).collect(Collectors.toList());
+        return Result.success(response);
     }
 
     /**
-     * 审批操作
-     */
-    @PostMapping("/request/{id}/approve")
-    public Result<ApprovalRequest> approve(@PathVariable Long id, @RequestBody ApprovalDTO approval) {
-        ApprovalRequest request = approvalService.approve(
-                id,
-                approval.getApproverId(),
-                approval.getApproverRole(),
-                approval.isApproved(),
-                approval.getComment()
-        );
-        return Result.success(approval.isApproved() ? "审批通过" : "审批拒绝", request);
-    }
-
-    /**
-     * 执行审批通过的操作
-     */
-    @PostMapping("/request/{id}/execute")
-    public Result<ApprovalRequest> executeRequest(@PathVariable Long id) {
-        ApprovalRequest request = approvalService.executeRequest(id);
-        return Result.success("操作执行成功", request);
-    }
-
-    /**
-     * 撤销审批申请
-     */
-    @PostMapping("/request/{id}/cancel")
-    public Result<ApprovalRequest> cancelRequest(@PathVariable Long id, @RequestParam Long applicantId) {
-        ApprovalRequest request = approvalService.cancelRequest(id, applicantId);
-        return Result.success("申请撤销成功", request);
-    }
-
-    /**
-     * 获取待我审批的申请列表
+     * 获取待我审批列表（Feign 接口 - 返回 Result<List<Map>>）
      */
     @GetMapping("/pending")
-    public Result<List<ApprovalRequest>> getPendingApprovals(
+    public Result<List<Map<String, Object>>> getPendingApprovals(
             @RequestParam Long approverId,
             @RequestParam String approverRole) {
         List<ApprovalRequest> list = approvalService.getPendingApprovals(approverId, approverRole);
-        return Result.success(list);
-    }
-
-    /**
-     * 获取我的申请列表
-     */
-    @GetMapping("/my-requests")
-    public Result<List<ApprovalRequest>> getMyRequests(@RequestParam Long applicantId) {
-        List<ApprovalRequest> list = approvalService.getMyRequests(applicantId);
-        return Result.success(list);
+        List<Map<String, Object>> response = list.stream().map(request -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("requestNo", request.getRequestNo());
+            map.put("status", request.getStatus().name());
+            map.put("operationType", request.getOperationType());
+            map.put("operationContent", request.getOperationContent());
+            map.put("applicantName", request.getApplicantName());
+            map.put("createTime", request.getCreateTime());
+            return map;
+        }).collect(Collectors.toList());
+        return Result.success(response);
     }
 
     /**
@@ -117,7 +102,7 @@ public class ApprovalController {
         private String operationType;
         private String operationContent;
         private String operationReason;
-        private ApprovalProcess.RiskLevel riskLevel;
+        private RiskLevel riskLevel;
     }
 
     @Data
