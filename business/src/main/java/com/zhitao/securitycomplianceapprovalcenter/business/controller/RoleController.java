@@ -5,22 +5,22 @@ import com.zhitao.securitycomplianceapprovalcenter.business.dto.RoleActionReques
 import com.zhitao.securitycomplianceapprovalcenter.common.feign.ApprovalFeignClient;
 import com.zhitao.securitycomplianceapprovalcenter.common.result.Result;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * 角色管理审批控制器
+ * 负责发起角色管理相关的审批申请
  */
 @RestController
 @RequestMapping("/api/business/role")
+@RequiredArgsConstructor
 public class RoleController {
 
-    @Autowired
-    private ApprovalFeignClient approvalFeignClient;
+    private final ApprovalFeignClient approvalFeignClient;
 
     /**
      * 发起创建角色审批申请
@@ -120,15 +120,5 @@ public class RoleController {
         Result<Map<String, Object>> response = approvalFeignClient.createApprovalRequest(requestDTO);
 
         return "角色绑定权限审批申请提交成功，申请编号：" + response.getData().get("requestNo");
-    }
-
-    /**
-     * 查询我的申请列表
-     */
-    @GetMapping("/my-apply")
-    public List<Map<String, Object>> getMyRoleApplyList(HttpServletRequest request) {
-        Long userId = Long.valueOf(request.getHeader("X-User-Id"));
-        Result<List<Map<String, Object>>> response = approvalFeignClient.getMyRequests(userId);
-        return response.getData();
     }
 }
