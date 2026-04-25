@@ -23,7 +23,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * JWT 认证过滤器
@@ -50,15 +49,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 从 Token 中获取用户信息
                 Long userId = claims.get("userId", Long.class);
                 String username = claims.getSubject();
-                @SuppressWarnings("unchecked")
-                List<String> permissions = (List<String>) claims.get("permissions");
+
+                // 安全地获取 roles 和 permissions（处理 null 和类型不匹配）
+                List<String> roles = getClaimsList(claims, "roles");
+                List<String> permissions = getClaimsList(claims, "permissions");
 
                 // 设置请求头，供下游 Controller 使用
-                request.setAttribute("X-User-Id", userId.toString());
-                request.setAttribute("X-User-Name", username);
+                if (userId != null) {
+                    request.setAttribute("X-User-Id", userId.toString());
+                }
+                if (username != null) {
+                    request.setAttribute("X-User-Name", username);
+                }
 
                 // 设置 Spring Security 上下文
-                setAuthenticationContext(userId, username, permissions, request);
+                setAuthenticationContext(userId, username, roles, permissions, request);
             }
         } catch (ExpiredJwtException e) {
             log.warn("JWT Token 已过期：{}", e.getMessage());
@@ -110,11 +115,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
+     * 从 Claims 中安全地获取 List<String>类型的值
+     */
+    private List<String> getClaimsList(Claims claims, String key) {
+        Object obj = claims.get(key);
+        if (obj == null) {
+            return new ArrayList<>();
+        }
+        if (obj instanceof List) {
+            List<String> result = new ArrayList<>();
+            for (Object item : (List<?>) obj) {
+                if (item != null) {
+                    result.add(item.toString());
+                }
+            }
+            return result;
+        }
+        return new ArrayList<>();
+    }
+
+    /**
      * 设置认证上下文
      */
-    private void setAuthenticationContext(Long userId, String username, List<String> permissions, HttpServletRequest request) {
+    private void setAuthenticationContext(Long userId, String username, List<String> roles,
+                                          List<String> permissions, HttpServletRequest request) {
         // 转换权限为 GrantedAuthority
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+        // 添加角色（Spring Security 角色需要 ROLE_ 前缀）
+        if (roles != null) {
+            for (String role : roles) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+            }
+        }
+
+        // 添加权限
         if (permissions != null) {
             for (String permission : permissions) {
                 authorities.add(new SimpleGrantedAuthority(permission));
@@ -129,6 +164,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 设置到 SecurityContext
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        log.debug("用户认证成功：userId={}, username={}, permissions={}", userId, username, permissions);
+        log.debug("用户认证成功：userId={}, username={}, roles={}, permissions={}", userId, username, roles, permissions);
     }
 }
