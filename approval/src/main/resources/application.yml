@@ -8,7 +8,7 @@ spring:
   application:
     name: approval-service
 
-  # 审批服务独立数据库（演示用H2，生产替换为MySQL）
+  # 审批服务独立数据库（演示用 H2，生产替换为 MySQL）
   datasource:
     url: jdbc:h2:file:~/approval_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
@@ -18,7 +18,7 @@ spring:
     console:
       enabled: true
       path: /h2-console
-  # JPA配置
+  # JPA 配置
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
@@ -28,13 +28,13 @@ spring:
       hibernate:
         format_sql: true
 
-# Feign调用配置
+# Feign 调用配置
 feign:
   client:
     audit:
-      url: http://localhost:8081  # 审计服务地址
+      url: http://localhost:8082  # 审计服务地址
     auth:
-      url: http://localhost:8083  # 权限中心地址（后续扩展）
+      url: http://localhost:8081  # 权限中心地址
   # 超时配置
   httpclient:
     connect-timeout: 2000
@@ -44,3 +44,9 @@ feign:
 logging:
   level:
     com.example.approval: DEBUG
+
+jwt:
+  # 密钥：生产环境请使用 256 位以上的强随机密钥，至少 32 个字符
+  secret: your-256-bit-secret-key-at-least-32-chars-long
+  # 过期时间：7 天（单位：毫秒）
+  expiration: 604800000

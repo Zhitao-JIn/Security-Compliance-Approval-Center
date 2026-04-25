@@ -1,6 +1,5 @@
-
 server:
-  port: 8081
+  port: 8082
   servlet:
     context-path: /
 
@@ -36,3 +35,9 @@ audit:
     level: INFO
     retention:
       days: 365
+
+jwt:
+  # 密钥：生产环境请使用 256 位以上的强随机密钥，至少 32 个字符
+  secret: your-256-bit-secret-key-at-least-32-chars-long
+  # 过期时间：7 天（单位：毫秒）
+  expiration: 604800000
