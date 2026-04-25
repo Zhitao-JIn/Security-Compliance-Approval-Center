@@ -1,4 +1,5 @@
 package com.zhitao.securitycomplianceapprovalcenter.auth.service;
+
 import com.zhitao.securitycomplianceapprovalcenter.auth.entity.Permission;
 import com.zhitao.securitycomplianceapprovalcenter.auth.entity.Role;
 import com.zhitao.securitycomplianceapprovalcenter.auth.entity.UserRole;
@@ -9,7 +10,6 @@ import com.zhitao.securitycomplianceapprovalcenter.common.feign.AuditFeignClient
 import com.zhitao.securitycomplianceapprovalcenter.common.result.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,15 +21,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoleService {
 
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-    private PermissionRepository permissionRepository;
+    private final PermissionRepository permissionRepository;
 
-    private UserRoleRepository userRoleRepository;
+    private final UserRoleRepository userRoleRepository;
 
-    private AuditFeignClient auditFeignClient;
-
-    private RoleService roleService;
+    private final AuditFeignClient auditFeignClient;
 
     @Transactional
     public Role createRole(Role role) {
@@ -47,6 +45,64 @@ public class RoleService {
         userRoleRepository.save(userRole);
     }
 
+    /**
+     * 删除角色
+     */
+    @Transactional
+    public void deleteRole(Long roleId, Long operatorId, String operatorName) {
+        // 先删除该角色关联的所有用户角色关系
+        List<UserRole> userRoles = userRoleRepository.findByRoleId(roleId);
+        for (UserRole userRole : userRoles) {
+            userRoleRepository.delete(userRole);
+        }
+        // 删除角色
+        roleRepository.deleteById(roleId);
+    }
+
+    /**
+     * 角色绑定权限（不带 HttpServletRequest 版本，供 Feign 调用）
+     */
+    @Transactional
+    public void bindPermissionsToRole(Long roleId, List<Long> permissionIds, Long operatorId, String operatorName) {
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("角色不存在"));
+
+        String beforeChange = convertPermissionsToJson(role.getPermissions());
+
+        List<Permission> permissions = permissionRepository.findAllById(permissionIds);
+        role.setPermissions(permissions);
+        role.setUpdateTime(LocalDateTime.now());
+
+        roleRepository.save(role);
+
+        String afterChange = convertPermissionsToJson(role.getPermissions());
+
+        // 写入审计日志
+        try {
+            auditFeignClient.recordPermissionChange(
+                    operatorId,
+                    operatorName,
+                    "BIND_ROLE_PERMISSION",
+                    "ROLE_PERMISSION",
+                    String.valueOf(roleId),
+                    role.getName(),
+                    beforeChange,
+                    afterChange,
+                    "角色绑定权限",
+                    "HIGH",
+                    "SUCCESS",
+                    null
+            );
+        } catch (Exception e) {
+            // 审计服务调用失败不影响主流程
+        }
+    }
+
+    @Transactional
+    public void removeUserRole(Long userId, Long roleId, Long operatorId, String operatorName) {
+        userRoleRepository.deleteByUserIdAndRoleId(userId, roleId);
+    }
+
     public List<Role> getRolesByUserId(Long userId) {
         List<UserRole> userRoles = userRoleRepository.findByUserId(userId);
         List<Long> roleIds = userRoles.stream()
@@ -62,25 +118,19 @@ public class RoleService {
                                       Long operatorId,
                                       String operatorName,
                                       String operationReason) {
-        // 查询角色
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new RuntimeException("角色不存在"));
 
-        // 保存变更前的权限快照
         String beforeChange = convertPermissionsToJson(role.getPermissions());
 
-        // 查询权限列表并绑定
         List<Permission> permissions = permissionRepository.findAllById(permissionIds);
         role.setPermissions(permissions);
         role.setUpdateTime(LocalDateTime.now());
 
-        // 保存角色
         Role updatedRole = roleRepository.save(role);
 
-        // 变更后的权限快照
         String afterChange = convertPermissionsToJson(updatedRole.getPermissions());
 
-        // 调用审计服务，记录权限变更日志
         Result<Void> auditResult = auditFeignClient.recordPermissionChange(
                 operatorId,
                 operatorName,
@@ -99,13 +149,8 @@ public class RoleService {
         return updatedRole;
     }
 
-    /**
-     * 查询用户的所有权限列表（核心：鉴权的依据）
-     */
     public List<String> getUserPermissionCodes(Long userId) {
-        // 查询用户的所有角色
         List<Role> userRoles = getRolesByUserId(userId);
-        // 提取所有角色的权限编码，去重
         return userRoles.stream()
                 .flatMap(role -> role.getPermissions().stream())
                 .map(Permission::getCode)
@@ -113,9 +158,6 @@ public class RoleService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 权限列表转JSON（用于审计Diff对比）
-     */
     private String convertPermissionsToJson(List<Permission> permissions) {
         if (permissions == null || permissions.isEmpty()) {
             return "[]";
@@ -125,18 +167,18 @@ public class RoleService {
                 .collect(Collectors.joining(",", "[", "]"));
     }
 
-    /**
-     * 校验用户是否拥有指定权限
-     * @param userId 用户ID
-     * @param permissionCode 目标权限编码
-     * @return 是否拥有权限
-     */
     public boolean hasPermission(Long userId, String permissionCode) {
-        // 1. 获取用户的所有权限编码列表
-        List<String> userPermissionCodes = roleService.getUserPermissionCodes(userId);
-
-        // 2. 校验：要么拥有目标权限，要么是超管（*:*:*）
+        List<String> userPermissionCodes = getUserPermissionCodes(userId);
         return userPermissionCodes.contains(permissionCode)
                 || userPermissionCodes.contains("*:*:*");
+    }
+
+    /**
+     * 判断用户是否有指定角色（通过角色编码判断）
+     */
+    public boolean userHasRole(Long userId, String roleCode) {
+        List<Role> userRoles = getRolesByUserId(userId);
+        return userRoles.stream()
+                .anyMatch(role -> roleCode.equals(role.getCode()));
     }
 }
