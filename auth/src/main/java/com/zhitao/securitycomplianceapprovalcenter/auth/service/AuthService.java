@@ -34,16 +34,24 @@ public class AuthService {
             throw new RuntimeException("用户已被禁用");
         }
 
-        // 核心：查询用户的所有权限编码
+        // 查询用户的所有权限编码
         List<String> permissionCodes = roleService.getUserPermissionCodes(user.getId());
 
-        // 把用户ID、用户名、权限列表都放入JWT载荷
+        // 查询用户的所有角色编码
+        List<Role> userRoles = roleService.getRolesByUserId(user.getId());
+        List<String> roleCodes = userRoles.stream()
+                .map(Role::getCode)
+                .distinct()
+                .toList();
+
+        // 把用户 ID、用户名、角色列表、权限列表都放入 JWT 载荷
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getId());
         claims.put("username", user.getUsername());
-        claims.put("permissions", permissionCodes); // 权限列表注入Token
+        claims.put("roles", roleCodes);        // 角色列表
+        claims.put("permissions", permissionCodes); // 权限列表
 
-        return jwtUtil.createToken(claims,username);
+        return jwtUtil.createToken(claims, username);
     }
 
 
